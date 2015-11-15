@@ -166,5 +166,34 @@ describe('dotenv', function () {
       parsed.INCLUDE_SPACE.should.eql('some spaced out string')
       done()
     })
+
+    it('should allow of mapping of values when a mapValue option is passed', function (done) {
+      var parsedTest = dotenv.parse(new Buffer('FOO=bar'), {mapValue: mapValue})
+      parsedTest.FOO.should.eql('qux')
+      done()
+      function mapValue () {
+        return 'qux'
+      }
+    })
+
+    it('should pass the key and value from the initial parse to the the mapValue option', function (done) {
+      dotenv.parse(new Buffer('FOO=bar'), {mapValue: mapValue})
+      done()
+      function mapValue (key, value) {
+        key.should.eql('FOO')
+        value.should.eql('bar')
+      }
+    })
+
+    it('should pass the prior values already parsed as the third argument', function (done) {
+      dotenv.parse(new Buffer('FOO=bar\nBAR=qux'), {mapValue: mapValue})
+      done()
+      function mapValue (key, value, values) {
+        if (key === 'BAR') {
+          values.FOO.should.eql('bar')
+        }
+        return value
+      }
+    })
   })
 })
