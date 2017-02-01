@@ -10,7 +10,7 @@ const dotenv = require('../lib/main')
 process.env.TEST = 'test'
 const parsed = dotenv.parse(fs.readFileSync('tests/.env', { encoding: 'utf8' }))
 
-t.plan(17)
+t.plan(20)
 
 t.type(parsed, Object, 'should return an object')
 
@@ -41,6 +41,12 @@ t.equal(parsed.RETAIN_INNER_QUOTES_AS_STRING, '{"foo": "bar"}', 'retains inner q
 t.equal(parsed.INCLUDE_SPACE, 'some spaced out string', 'retains spaces in string')
 
 t.equal(parsed['USERNAME'], 'therealnerdybeast@example.tld', 'parses email addresses completely')
+
+t.equal(parsed.EXPORTED, 'exportUpper', 'sets despite leading export')
+
+t.equal(parsed.export, 'exportLower', 'still supports export as a variable name')
+
+t.equal(parsed.exportedKey, 'foo', 'not confused by name starting with export')
 
 const payload = dotenv.parse(Buffer.from('BASIC=basic'))
 t.equal(payload.BASIC, 'basic', 'should parse a buffer from a file into an object')
